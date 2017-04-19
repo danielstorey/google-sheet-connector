@@ -74,7 +74,7 @@ GoogleSheetConnector.prototype = {
         }).then(function (response) {
             var sheets = JSON.parse(response.body).sheets;
             this.numSheets = sheets.length;
-            sheets.forEach(this.loadSheetViaAuth);
+            sheets.forEach(this.loadSheetViaAuth, this);
         }.bind(this));
     },
 
@@ -146,11 +146,9 @@ GoogleSheetConnector.prototype = {
             if (authInstance.isSignedIn.get()) {
                 this.loadSpreadsheet()
             } else {
-                authInstance.isSignedIn.listen(this.updateSigninStatus);
+                authInstance.isSignedIn.listen(this.updateSigninStatus.bind(this));
                 authInstance.signIn();
             }
-
-
         }.bind(this));
     },
 
