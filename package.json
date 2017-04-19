@@ -1,6 +1,6 @@
 {
     "name": "google-sheet-connector",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Consume data from a Google spreadsheet for use in your own application",
     "author": "Dan Storey <danielstorey@gmail.com>",
     "dependencies": {
