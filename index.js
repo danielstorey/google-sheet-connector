@@ -68,6 +68,16 @@ GoogleSheetConnector.prototype = {
         }, this);
     },
 
+    loadSpreadsheet: function() {
+        gapi.client.sheets.spreadsheets.get({
+            spreadsheetId: this.spreadsheetId
+        }).then(function (response) {
+            var sheets = JSON.parse(response.body).sheets;
+            this.numSheets = sheets.length;
+            sheets.forEach(this.loadSheetViaAuth);
+        }.bind(this));
+    },
+
     loadSheetViaAuth: function(sheet) {
         gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: this.spreadsheetId,
@@ -132,15 +142,22 @@ GoogleSheetConnector.prototype = {
             clientId: this.clientId,
             scope: "https://www.googleapis.com/auth/spreadsheets.readonly"
         }).then(function () {
+            var authInstance = gapi.auth2.getAuthInstance();
+            if (authInstance.isSignedIn.get()) {
+                this.loadSpreadsheet()
+            } else {
+                authInstance.isSignedIn.listen(this.updateSigninStatus);
+                authInstance.signIn();
+            }
 
-            gapi.client.sheets.spreadsheets.get({
-                spreadsheetId: this.spreadsheetId
-            }).then(function (response) {
-                var sheets = JSON.parse(response.body).sheets;
-                this.numSheets = sheets.length;
-                sheets.forEach(this.loadSheetViaAuth);
-            }.bind(this));
+
         }.bind(this));
+    },
+
+    updateSigninStatus: function(isSignedIn) {
+        if (isSignedIn) {
+            this.loadSpreadsheet();
+        }
     },
 
     getSheet: function(sheetName) {
