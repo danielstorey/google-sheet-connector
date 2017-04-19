@@ -40,7 +40,7 @@ GoogleSheetConnector.prototype = {
         console.info("Loading data from Spreadsheet");
 
         if (this.clientId) {
-            return gapi.load("client:auth2", this.initClient);
+            return gapi.load("client:auth2", this.initClient.bind(this));
         } else if (this.apiKey) {
             var url = [
                 "https://sheets.googleapis.com/v4/spreadsheets/",
